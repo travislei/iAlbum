@@ -1,0 +1,148 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background: #efebe9;
+  color: #4e342e;
+  font: 14px Arial, Helvetica, "Lucida Grande", sans-serif;
+}
+
+a {
+  text-decoration: none;
+}
+
+.clearfix {
+  clear: both;
+}
+
+.box-shadow {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+#main-container {
+  width: 960px;
+  margin: 0 auto;
+}
+
+header {
+  margin: 0 0 20px 0;
+  padding: 20px;
+  color: #FFF;
+  background: #795548;
+}
+
+header h1 {
+  float: left;
+}
+
+header h1 a {
+  color: #FFFFFF;
+}
+
+header h1 a:hover {
+  color: #d7ccc8;
+}
+
+header h2 {
+  text-align: center;
+  text-align: center;
+  border-bottom: 1px solid #a1887f;
+  padding: 0 0 20px 0;
+  margin: 0 0 20px 0;
+  font-weight: normal;
+}
+
+header #welcome {
+  padding-top: 5px;
+}
+
+header #welcome h3 {
+  float: right;
+  font-weight: normal;
+}
+
+header #welcome a {
+  color: #d7ccc8;
+  float: right;
+  margin: 0 0 0 20px;
+}
+
+header #login {
+  float: right;
+  text-align: right;
+  width: 600px;
+}
+
+#login legend {
+  display: none;
+}
+
+nav {
+  float: left;
+  width: 200px;
+  background: #d7ccc8;
+}
+
+nav p {
+  text-align: center;
+  margin: 20px;
+}
+
+nav h2 {
+  text-transform: uppercase;
+  color: #4e342e;
+  margin: 20px;
+  font-size: 16px;
+  ;
+}
+
+nav ul {
+  list-style: none;
+}
+
+nav li {
+  line-height: 2em;
+}
+
+nav li a {
+  display: block;
+  color: #795548;
+  padding: 10px 0 10px 20px
+}
+
+nav li a:hover {
+  color: #3e2723;
+}
+
+nav .selected a {
+  color: #4e342e;
+  background-color: #bcaaa4;
+}
+
+section {
+  float: right;
+  width: 720px;
+}
+
+section h3 {
+  text-align: center;
+  text-transform: uppercase;
+  margin: 10px 0;
+  font-size: 150%;
+}
+
+.photo {
+  float: left;
+  background-color: #FFFFFF;
+  margin: 0 20px 20px 0;
+}
+
+.description {
+  padding: 20px;
+}
+
+#upload-photo {
+  clear: both;
+}

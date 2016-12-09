@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="album">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>iAlbum</title>
+  <!--  <link rel="stylesheet" href="/stylesheets/style.css">-->
+  <link rel="stylesheet" href="/stylesheets/mystyle.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.9/angular-route.js"></script>
+  <script type="text/javascript" src="https://cdn.rawgit.com/adonespitogo/angular-base64-upload/master/src/angular-base64-upload.js"></script>
+</head>
+
+<body>
+  <div id="main-container">
+    <header class="box-shadow" ng-controller="LoginController">
+      <div ng-switch="notifn">
+        <h2 ng-switch-when="yes">{{ notifnText }}</h2>
+      </div>
+      <h1><a href="#/">iAlbum</a></h1>
+      <div id="login" ng-switch="loginStatus">
+        <form ng-switch-default>
+          <legend>Login Form</legend>
+
+          <label>Username</label>
+          <input ng-model="user.username" type="text" placeholder="Username" required>
+
+          <label>Password</label>
+          <input ng-model="user.password" type="password" placeholder="Password" required>
+
+          <button type="submit" ng-click="login(user)">Login</button>
+        </form>
+        <div id="welcome" ng-switch-when="isLogin">
+          <a href="#" ng-click="logout()"><i>Logout</i></a>
+          <h3>Hello {{ username }}!</h3>
+        </div>
+      </div>
+      <div class="clearfix"></div>
+    </header>
+
+    <div id="container">
+      <nav class="box-shadow" ng-controller="NavController" ng-switch="loginStatus">
+        <h2>Album List</h2>
+        <p ng-switch-default>Please login.</p>
+        <div ng-switch-when="isLogin">
+          <ul>
+            <li ng-class="{selected: $location.path() == '/getalbum/0'}"><a href="#/getalbum/0">My Album</a></li>
+          </ul>
+          <ul ng-repeat="f in firendsList">
+            <li ng-class="{selected: $location.path() == '/getalbum/{{ f._id }}'}"><a href="#/getalbum/{{ f._id }}">{{ f.username }}'s Album</a></li>
+          </ul>
+        </div>
+      </nav>
+
+      <section ng-view>
+      </section>
+
+      <div class="clearfix "></div>
+    </div>
+  </div>
+
+  <script type="text/ng-template" id="index.html">
+  </script>
+
+  <script type="text/ng-template" id="getalbum.html">
+    <h3 ng-show="!photos">No Photo</h3>
+    <div class="photo box-shadow" ng-repeat="p in photos">
+      <a href="#/viewphoto/{{ p._id }}"><img src="{{ p.url }}" width="220px" height="220px"></a>
+      <div class="description">
+        <div class="likeby" ng-show="p.likedby.length">
+          <span ng-repeat="name in p.likedby">{{ name }}{{$last ? '' : ', '}}</span> liked this photo!
+        </div>
+        <div class="photo-btn" ng-switch="myAlbum">
+          <button ng-switch-default class="btn" ng-click="likePhoto(p._id)">Like</button>
+          <button ng-switch-when="yes" class="btn" ng-click="deletePhoto(p._id)">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="upload-photo" ng-switch="myAlbum">
+      <form ng-switch-when="yes">
+        <legend>Upload Photo</legend>
+
+        <label>Photo</label>
+        <input ng-model="photo" id="upload-photo" type="file" base-sixty-four-input>
+
+        <button type="submit " ng-click="upload(photo) ">
+          Upload</button>
+      </form>
+    </div>
+  </script>
+
+  <script src="/javascripts/myscript.js "></script>
+</body>
+
+</html>
