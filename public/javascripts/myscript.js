@@ -1,5 +1,8 @@
 var albumApp = angular.module('album', ['ngRoute', 'naif.base64']);
 
+/*
+ * Routing information
+ */
 albumApp.config(function ($routeProvider) {
   $routeProvider
     .when('/', {
@@ -15,9 +18,16 @@ albumApp.config(function ($routeProvider) {
     });
 });
 
+/*
+ * Controllers
+ */
 albumApp.controller('InitController', ['$scope', '$rootScope', '$http', function ($scope, $rootScope, $http) {
+  $rootScope.userID = '';
+
+  // GET request to init
   $http.get('/init')
     .then(function (res) {
+        // Do nothing if empty string
         if (res.data === '') return;
 
         $rootScope.loginStatus = 'isLogin';
@@ -29,8 +39,11 @@ albumApp.controller('InitController', ['$scope', '$rootScope', '$http', function
       });
 }]);
 
-albumApp.controller('NavController', ['$scope', '$location', function ($scope, $location) {
-  $scope.$location = $location;
+albumApp.controller('NavController', ['$scope', '$rootScope', '$location', function (userID, $scope, $rootScope, $location) {
+  // Set the userID value
+  $scope.setUID = function (uid) {
+    $scope.userID = uid;
+  };
 }]);
 
 albumApp.controller('LoginController', ['$scope', '$rootScope', '$http', '$timeout', function ($scope, $rootScope, $http, $timeout) {
@@ -41,27 +54,29 @@ albumApp.controller('LoginController', ['$scope', '$rootScope', '$http', '$timeo
       return;
     }
 
+    // POST request to login
     $http.post('/login', user)
       .then(function (res) {
-          if (res.data === 'Login failure') {
-            $scope.notifn = 'yes';
-            $scope.notifnText = 'Login failure';
-          } else {
-            $scope.username = user.username;
-            $rootScope.loginStatus = 'isLogin';
-            $rootScope.firendsList = res.data.friends;
+        if (res.data === 'Login failure') {
+          $scope.notifn = 'yes';
+          $scope.notifnText = 'Login failure';
+        } else {
+          $scope.username = user.username;
+          $rootScope.loginStatus = 'isLogin';
+          $rootScope.firendsList = res.data.friends;
 
-            $scope.notifn = 'yes';
-            $scope.notifnText = 'Login successfully';
+          // Alert user
+          $scope.notifn = 'yes';
+          $scope.notifnText = 'Login successfully';
+        }
 
-            $timeout(function () {
-              $scope.notifn = '';
-            }, 2000);
-          }
-        },
-        function (res) {
-          alert('FATAL ERROR: Cannot POST login');
-        });
+        // Finish alerting
+        $timeout(function () {
+          $scope.notifn = '';
+        }, 2000);
+      }, function (res) {
+        alert('FATAL ERROR: Cannot POST login');
+      });
   }
 
   // Logout button
@@ -71,9 +86,11 @@ albumApp.controller('LoginController', ['$scope', '$rootScope', '$http', '$timeo
         if (res.data === '') {
           $rootScope.loginStatus = '';
 
+          // Alert user
           $scope.notifn = 'yes';
           $scope.notifnText = 'Logout successfully';
 
+          // Finish alerting
           $timeout(function () {
             $scope.notifn = '';
           }, 2000);
@@ -85,18 +102,23 @@ albumApp.controller('LoginController', ['$scope', '$rootScope', '$http', '$timeo
 }]);
 
 albumApp.controller('GetAlbumController', ['$scope', '$timeout', '$routeParams', '$http', '$route', function ($scope, $timeout, $routeParams, $http, $route) {
+  // Check if it is My Album
   if (parseInt($routeParams.uid) === 0)
     $scope.myAlbum = 'yes';
 
+  // Photo list
+  $scope.photos = [];
+
+  // GET request to getalbum
   $http.get('/getalbum/' + $routeParams.uid)
     .then(function (res) {
-      console.log(res.data);
       if (res.data !== 'no photo')
         $scope.photos = res.data;
     }, function (res) {
       alert('FATAL ERROR: Cannot GET getalbum');
     });
 
+  // PUT request to updatelike
   $scope.likePhoto = function (pid) {
     $http.put('/updatelike/' + pid)
       .then(function (res) {
@@ -114,6 +136,7 @@ albumApp.controller('GetAlbumController', ['$scope', '$timeout', '$routeParams',
       });
   };
 
+  // DELETE request to deletphoto
   $scope.deletePhoto = function (pid) {
     if (!confirm('Areyou sure you want to delete this photo')) return;
 
@@ -133,6 +156,7 @@ albumApp.controller('GetAlbumController', ['$scope', '$timeout', '$routeParams',
       });
   };
 
+  // POST request to uploadphoto
   $scope.upload = function (data) {
     if (data === undefined) {
       alert('Please select a file!');
@@ -147,11 +171,25 @@ albumApp.controller('GetAlbumController', ['$scope', '$timeout', '$routeParams',
             'url': res.data.url,
             'likedby': []
           });
+
+          document.getElementById('photo-upload-form').reset();
         } else {
           alert(res.data);
         }
       }, function (res) {
         alert('FATAL ERROR: Cannot POST uploadPhoto');
       });
-  }
+  };
+
+  // View large photo mode
+  $scope.viewPhoto = function (photo) {
+    $scope.viewMode = 'largePhoto';
+    $scope.viewPhoto = photo;
+  };
+
+  // Reload page and set to album view mode
+  $scope.reload = function () {
+    $scope.viewMode = '';
+    $route.reload();
+  };
 }]);

@@ -13,7 +13,7 @@
   <script type="text/javascript" src="https://cdn.rawgit.com/adonespitogo/angular-base64-upload/master/src/angular-base64-upload.js"></script>
 </head>
 
-<body>
+<body ng-controller="InitController">
   <div id="main-container">
     <header class="box-shadow" ng-controller="LoginController">
       <div ng-switch="notifn">
@@ -45,11 +45,9 @@
         <h2>Album List</h2>
         <p ng-switch-default>Please login.</p>
         <div ng-switch-when="isLogin">
-          <ul>
-            <li ng-class="{selected: $location.path() == '/getalbum/0'}"><a href="#/getalbum/0">My Album</a></li>
-          </ul>
           <ul ng-repeat="f in firendsList">
-            <li ng-class="{selected: $location.path() == '/getalbum/{{ f._id }}'}"><a href="#/getalbum/{{ f._id }}">{{ f.username }}'s Album</a></li>
+            <li ng-if="$first" ng-class="{ 'selected' : userID === 0 }" ng-click="setUID(0)"><a href="#/getalbum/0">My Album</a></li>
+            <li ng-class="{ 'selected' : userID === f._id }" ng-click="setUID(f._id)"><a href="#/getalbum/{{ f._id }}">{{ f.username }}'s Album</a></li>
           </ul>
         </div>
       </nav>
@@ -65,31 +63,52 @@
   </script>
 
   <script type="text/ng-template" id="getalbum.html">
-    <h3 ng-show="!photos">No Photo</h3>
-    <div class="photo box-shadow" ng-repeat="p in photos">
-      <a href="#/viewphoto/{{ p._id }}"><img src="{{ p.url }}" width="220px" height="220px"></a>
-      <div class="description">
-        <div class="likeby" ng-show="p.likedby.length">
-          <span ng-repeat="name in p.likedby">{{ name }}{{$last ? '' : ', '}}</span> liked this photo!
+    <h3 ng-if="!photos.length">No Photo</h3>
+
+    <div ng-switch="viewMode">
+      <div class="photo box-shadow" ng-switch-default ng-repeat="p in photos">
+        <img ng-src="{{ p.url }}" width="220px" height="220px" ng-click="viewPhoto(p)">
+        <div class="description">
+          <div class="likeby" ng-show="p.likedby.length">
+            <span ng-repeat="name in p.likedby">{{ name }}{{$last ? '' : ', '}}</span> liked this photo!
+          </div>
+          <div class="photo-btn" ng-switch="myAlbum">
+            <button ng-switch-default class="btn" ng-click="likePhoto(p._id)">Like</button>
+            <button ng-switch-when="yes" class="btn" ng-click="deletePhoto(p._id)">Delete</button>
+          </div>
+          <div class="clearfix"></div>
         </div>
+      </div>
+
+      <div ng-switch-default ng-switch="myAlbum">
+        <div id="upload-photo" class="box-shadow" ng-switch-when="yes">
+          <form id="photo-upload-form">
+            <legend>Upload Photo</legend>
+
+            <label>Photo</label>
+            <input ng-model="photo" id="upload-photo" type="file" base-sixty-four-input>
+
+            <button type="submit" ng-click="upload(photo)">Upload</button>
+          </form>
+        </div>
+      </div>
+
+      <div id="viewPhoto" ng-switch-when="largePhoto">
+        <button ng-click="reload()">X</button>
+        <img ng-src="{{ viewPhoto.url }}" width="720px" height="720px">
+
+        <div class="likeby" ng-show="viewPhoto.likedby.length">
+          <p><span ng-repeat="name in viewPhoto.likedby">{{ name }}{{$last ? '' : ', '}}</span> liked this photo!</p>
+        </div>
+
         <div class="photo-btn" ng-switch="myAlbum">
-          <button ng-switch-default class="btn" ng-click="likePhoto(p._id)">Like</button>
-          <button ng-switch-when="yes" class="btn" ng-click="deletePhoto(p._id)">Delete</button>
+          <button ng-switch-default class="btn" ng-click="likePhoto(viewPhoto._id)">Like</button>
+          <button ng-switch-when="yes" class="btn" ng-click="deletePhoto(viewPhoto._id)">Delete</button>
         </div>
+        <div class="clearfix"></div>
       </div>
     </div>
 
-    <div id="upload-photo" ng-switch="myAlbum">
-      <form ng-switch-when="yes">
-        <legend>Upload Photo</legend>
-
-        <label>Photo</label>
-        <input ng-model="photo" id="upload-photo" type="file" base-sixty-four-input>
-
-        <button type="submit " ng-click="upload(photo) ">
-          Upload</button>
-      </form>
-    </div>
   </script>
 
   <script src="/javascripts/myscript.js "></script>
